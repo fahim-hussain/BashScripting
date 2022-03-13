@@ -1,0 +1,74 @@
+# Assignment 2
+# Course:                UNX510
+# Family Name:           Hussain
+# Given Name:            Fahim
+# Student Number:        105446181
+# Login name:            fhussain35
+# Professor:             Shahdad Shariatmadari
+# Due Date:              July 18, 2021
+#
+# I declare that the attached assignment is my own work in accordance with
+# Seneca Academic Policy.  No part of this assignment has been copied manually
+# or electronically from any other source (including web sites) or distributed
+# to other students.
+##############################################################################
+
+
+currDir=$1
+count=1
+count2=0
+
+
+if [ $# -ge 2 ]
+then
+	echo "Usage: pathdisplay [ dir-name ]"
+	exit 1
+fi
+
+if [ $# -lt 1 ]
+then
+	currDir=$PWD
+fi
+
+if [ ! -d "$currDir" ]
+then
+	echo "$currDir is not a valid directory name"
+	exit 1
+fi
+
+dir1=$(realpath $currDir)
+
+dirLevels=$(tr -dc '/' <<<$dir1 | wc -c)
+dirLevels=$(( dirLevels+1 ))
+
+while (( count < $dirLevels  ))
+do
+	dirArray[$count]=$(echo $dir1 | cut -d"/" -f$((count+1)))
+	dirPath[$count]=${dirPath[$count2]}"/"${dirArray[$count]}
+
+	count2=$count
+	count=$(( count+1 )) 
+done
+
+dirArray[0]='/'
+dirPath[0]='/'
+count=0
+
+echo "  Owner   Group   Other  Filename"
+echo "  -----   -----   -----  --------"
+
+while (( count < $dirLevels  ))
+do
+	temp=$(ls -ld "${dirPath[$count]}" | cut -d " " -f 1)
+
+ 	if [[ $temp =~ -$ ]]
+	then
+		tput setaf 1
+		echo "$temp ${dirArray[$count]}"| sed -r 's/d/d /g;s/r/r /g;s/w/w /g;s/xr/x  r/g;s/x-/x  -/g;s/-/- /g;s/x  \./x. /;s/x /x  /g;s/r w -/r w -  /g;s/r - -/r - -  /g;s/- w -/- w -  /g;s/- - -/- - -  /g;s/- - -    /- - -  /g;'
+		tput setaf 7
+	else
+		echo "$temp ${dirArray[$count]}"| sed -r 's/d/d /g;s/r/r /g;s/w/w /g;s/xr/x  r/g;s/x-/x  -/g;s/-/- /g;s/x  \./x. /;s/x /x  /g;s/r w -/r w -  /g;s/r - -/r - -  /g;s/- w -/- w -  /g;s/- - -/- - -  /g;s/- - -    /- - -  /g;'
+	fi
+
+	count=$(( count+1  ))
+done
